@@ -6,7 +6,7 @@ from src.util.constants import DATA_PATH, PATH_RAW_TRAIN_SET, PATH_RAW_VALIDATE_
 
 
 def download_data():
-    (DATA_PATH / 'raw').parent.mkdir(parents=True, exist_ok=True)
+    (DATA_PATH / 'raw').mkdir(parents=True, exist_ok=True)
 
     numer_api = NumerAPI()
     if os.path.exists(PATH_RAW_TRAIN_SET):

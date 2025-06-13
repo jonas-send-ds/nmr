@@ -1,8 +1,33 @@
 
 import polars as pl
 import numpy as np
+import pickle
+import matplotlib as plt
 
+from pathlib import Path
+from typing import Any
 from scipy.stats import norm
+
+
+def customise_plot_style():
+    # customise Matplotlib and Seaborn plots
+    plt.rc('axes.spines', right=False, top=False)  # hide top and right spine
+    plt.rc('axes', grid=True, linewidth=.5)  # activate grid and slim axis lines
+    plt.rc('xtick.major', width=.5)  # slim x-ticks
+    plt.rc('ytick.major', width=.5)  # slim y-ticks
+    plt.rc('grid', alpha=.8, linewidth=.5)  # slim, transparent grid
+
+
+def save_as_pickle(x: Any, path: str | Path) -> None:
+    with open(path, "wb") as open_file:
+        # noinspection PyTypeChecker
+        pickle.dump(x, open_file)
+
+
+def load_pickle(path: str | Path) -> Any:
+    with open(path, "rb") as open_file:
+        x = pickle.load(open_file)
+    return x
 
 
 def mean_grouped_spearman_correlation(prediction: pl.Series, target: pl.Series, era: pl.Series) -> float:
