@@ -25,3 +25,17 @@ dependencies = [
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.13"
+
+[tool.ruff]
+lint.select = [
+    "RET504",  # unnecessary assignment
+    "ANN001",  # missing type annotation for function argument
+    "ANN201",  # missing return type annotation for public function
+    "D103",  # missing docstring in public function
+    "PLR2044",  # line with empty comment
+    "W292",  # no newline at end of file
+]
+

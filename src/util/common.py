@@ -9,8 +9,10 @@ from typing import Any
 from scipy.stats import norm
 
 
-def customise_plot_style():
-    # customise Matplotlib and Seaborn plots
+def customise_plot_style() -> None:
+    """
+    customise Matplotlib and Seaborn plots
+    """
     plt.rc('axes.spines', right=False, top=False)  # hide top and right spine
     plt.rc('axes', grid=True, linewidth=.5)  # activate grid and slim axis lines
     plt.rc('xtick.major', width=.5)  # slim x-ticks
@@ -26,8 +28,7 @@ def save_as_pickle(x: Any, path: str | Path) -> None:
 
 def load_pickle(path: str | Path) -> Any:
     with open(path, "rb") as open_file:
-        x = pickle.load(open_file)
-    return x
+        return pickle.load(open_file)
 
 
 def mean_grouped_spearman_correlation(prediction: pl.Series, target: pl.Series, era: pl.Series) -> float:
@@ -70,3 +71,39 @@ def numerai_corr(prediction: pl.Series, target: pl.Series) -> np.float64:
 
     # noinspection PyTypeChecker
     return np.corrcoef(prediction_heavy_tails, target_heavy_tails)[0, 1]
+
+
+def orthogonalise_by_era(prediction: pl.Series, prediction_mm: pl.Series, era: pl.Series) -> pl.Series:
+    df: pl.DataFrame = pl.DataFrame({"era": era, "prediction": prediction, "prediction_mm": prediction_mm})
+
+    orthogonalise_lazy = (pl.struct(pl.col('prediction'), pl.col('prediction_mm'))
+                          .map_elements(orthogonalise, return_dtype=pl.List(pl.Float64)))
+
+    return (df.group_by("era", maintain_order=True)
+            .agg(orthogonalise_lazy.alias('prediction_orthogonalised')).explode('prediction_orthogonalised')
+            .select('prediction_orthogonalised')
+            .to_series())
+
+
+def orthogonalise(series: pl.Series) -> np.ndarray:
+    """
+    Orthogonalises predictions with respect to the meta-model predictions by projecting
+    prediction onto mm_prediction, then subtracting that projection from prediction.
+
+    Arguments:
+        series: a Polars struct column
+
+    Returns:
+        np.ndarray - the orthogonalised series as ndarray/list
+    """
+    prediction: pl.Series = series.struct.field("prediction")
+    prediction_mm: pl.Series = series.struct.field("prediction_mm")
+
+    ranked_prediction = (prediction.rank(method="average") - 0.5) / prediction.count()
+    gauss_ranked_prediction = norm.ppf(ranked_prediction)  # gaussianise predictions
+    ranked_prediction_mm = (prediction_mm.rank(method="average") - 0.5) / prediction_mm.count()
+    gauss_ranked_prediction_mm = norm.ppf(ranked_prediction_mm)  # gaussianise meta-model predictions
+
+    return gauss_ranked_prediction - np.outer(gauss_ranked_prediction_mm,
+                                              (gauss_ranked_prediction.T @ gauss_ranked_prediction_mm) /
+                                              (gauss_ranked_prediction_mm.T @ gauss_ranked_prediction_mm)).flatten()

@@ -2,7 +2,7 @@
 from src.data.download_data import download_data
 
 
-def main():
+def main() -> None:
     download_data()
 
 

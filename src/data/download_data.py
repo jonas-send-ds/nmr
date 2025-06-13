@@ -5,7 +5,7 @@ from numerapi import NumerAPI
 from src.util.constants import DATA_PATH, PATH_RAW_TRAIN_SET, PATH_RAW_VALIDATE_SET, PATH_RAW_META_MODEL
 
 
-def download_data():
+def download_data() -> None:
     (DATA_PATH / 'raw').mkdir(parents=True, exist_ok=True)
 
     numer_api = NumerAPI()
