@@ -19,3 +19,5 @@ def download_data() -> None:
     numer_api.download_dataset("v5.0/train.parquet", PATH_RAW_TRAIN_SET)
     numer_api.download_dataset("v5.0/validation.parquet", PATH_RAW_VALIDATE_SET)
     numer_api.download_dataset("v5.0/meta_model.parquet", PATH_RAW_META_MODEL)
+
+    print('Raw data downloaded.')

@@ -1,2 +1,4 @@
 raw/
 tmp/
+folds/
+df_all.parquet

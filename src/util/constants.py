@@ -25,3 +25,5 @@ DATA_PATH: Path = find_project_root(Path.cwd()) / 'data'
 PATH_RAW_TRAIN_SET: str = str(DATA_PATH) + "/raw/train.parquet"
 PATH_RAW_VALIDATE_SET: str = str(DATA_PATH) + "/raw/validate.parquet"
 PATH_RAW_META_MODEL: str = str(DATA_PATH) + "/raw/meta_model.parquet"
+
+META_MODEL_PERFORMANCE = [0.037, 0.048, 0.026]
