@@ -26,7 +26,7 @@ def save_as_pickle(x: Any, path: str | Path) -> None:
         pickle.dump(x, open_file)
 
 
-def load_pickle(path: str | Path) -> Any:
+def load_from_pickle(path: str | Path) -> Any:
     with open(path, "rb") as open_file:
         return pickle.load(open_file)
 
