@@ -1,0 +1,53 @@
+
+import polars as pl
+import lightgbm as lgb
+
+from datetime import datetime
+
+from src.util.constants import DATA_PATH
+from src.util.common import load_from_pickle
+
+
+study = load_from_pickle(DATA_PATH / 'results/study.pkl')
+selected_features = load_from_pickle(DATA_PATH / 'results/selected_features.pkl')
+required_columns = ['era', 'target'] + selected_features
+
+df_train_list = []
+for fold in range(3):
+    df_train_fold = pl.read_parquet(f"{DATA_PATH}/folds/df_train_{fold}.parquet")
+    df_train_fold = df_train_fold.select(required_columns)
+    df_train_list.append(df_train_fold)
+    del df_train_fold
+
+sorted_trials = sorted(study.trials, key=lambda trial: trial.value if trial.value is not None else float('-inf'), reverse=True)[:20]
+parameters_list = [trial.params for trial in sorted_trials]
+
+fixed_parameters = {
+    'objective': 'regression',
+    'metric': 'None',
+    "n_jobs": 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
+    "subsample_freq": 1,
+    "verbose": -1
+}
+
+(DATA_PATH / 'models/lgb').mkdir(parents=True, exist_ok=True)
+
+for index in range(len(parameters_list)):
+    parameters = parameters_list[index]
+    parameters.update(fixed_parameters)
+
+    for fold in range(3):
+        lgb_train = lgb.Dataset(
+            df_train_list[fold][selected_features].to_numpy(),
+            label=df_train_list[fold]['target'].to_numpy()
+        )
+
+        model = lgb.train(
+            params=parameters,
+            train_set=lgb_train,
+            num_boost_round=parameters['num_boost_round']
+        )
+
+        model.save_model(f"{DATA_PATH}/models/lgb/lgb_model_{index}_{fold}.txt")
+
+        print(f"{datetime.now().strftime("%H:%M:%S")} . . . Model {index} saved for fold {fold}.")

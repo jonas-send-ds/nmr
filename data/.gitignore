@@ -1,4 +1,5 @@
 raw/
 tmp/
 folds/
+models/
 df_all.parquet
