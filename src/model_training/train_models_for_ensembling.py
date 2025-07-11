@@ -34,7 +34,12 @@ fixed_parameters = {
 
 for index in range(len(parameters_list)):
     parameters = parameters_list[index]
+    parameters["min_sum_hessian_in_leaf"] = (10 ** parameters["min_sum_hessian_in_leaf_exponent"] - 1) / 10 ** 5,
+    parameters["lambda_l1"] = (10 ** parameters["lambda_l1_exponent"] - 1) / 10 ** 5,
+    parameters["lambda_l2"] = (10 ** parameters["lambda_l2_exponent"] - 1) / 10 ** 5
     parameters.update(fixed_parameters)
+    for key in ["min_sum_hessian_in_leaf_exponent", "lambda_l1_exponent", "lambda_l2_exponent"]:
+            del parameters[key]
 
     for fold in range(3):
         lgb_train = lgb.Dataset(
