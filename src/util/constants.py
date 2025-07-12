@@ -27,3 +27,11 @@ PATH_RAW_VALIDATE_SET: str = str(DATA_PATH) + "/raw/validate.parquet"
 PATH_RAW_META_MODEL: str = str(DATA_PATH) + "/raw/meta_model.parquet"
 
 META_MODEL_PERFORMANCE = [.051, .048, .035]
+
+FIXED_LGB_PARAMETERS = {
+    'objective': 'regression',
+    'metric': 'None',
+    "n_jobs": 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
+    "subsample_freq": 1,
+    "verbose": -1
+}
