@@ -47,4 +47,4 @@ for index in range(len(parameters_list)):
 
         model.save_model(f"{DATA_PATH}/models/lgb/lgb_model_{index}_{fold}.txt")
 
-        print(f"{datetime.now().strftime("%H:%M:%S")} . . . Model {index} saved for fold {fold}.")
+        print(f"{datetime.now().strftime('%H:%M:%S')} . . . Model {index} saved for fold {fold}.")
