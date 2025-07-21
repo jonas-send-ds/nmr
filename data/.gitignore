@@ -2,4 +2,5 @@ raw/
 tmp/
 folds/
 models/
+upload/
 df_all.parquet
