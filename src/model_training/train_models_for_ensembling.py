@@ -8,6 +8,9 @@ from src.util.constants import DATA_PATH, FIXED_LGB_PARAMETERS
 from src.util.common import load_from_pickle
 
 
+# Train the top 20 models from hyperparameter tuning (see src/notebooks/tune_hyperparameters.ipynb) for the 3 folds.
+
+
 study = load_from_pickle(DATA_PATH / 'results/study.pkl')
 selected_features = load_from_pickle(DATA_PATH / 'results/selected_features.pkl')
 required_columns = ['era', 'target'] + selected_features

@@ -21,21 +21,34 @@ def customise_plot_style() -> None:
 
 
 def save_as_pickle(x: Any, path: str | Path) -> None:
+    """
+    Saves a given object to a specified file path in pickle format.
+    """
     with open(path, "wb") as open_file:
         # noinspection PyTypeChecker
         pickle.dump(x, open_file)
 
 
 def load_from_pickle(path: str | Path) -> Any:
+    """
+    Load an object from a pickle file. The file must have been created using Python's `pickle` module,
+    and its format  should be compatible with the current Python version and environment.
+    """
     with open(path, "rb") as open_file:
         return pickle.load(open_file)
 
 
 def mean_grouped_spearman_correlation(prediction: pl.Series, target: pl.Series, era: pl.Series) -> float:
+    """
+    Calculates the mean of Spearman correlation coefficients applied grouped by era.
+    """
     return grouped_spearman_correlation(prediction, target, era).mean()
 
 
 def grouped_spearman_correlation(prediction: pl.Series, target: pl.Series, era: pl.Series) -> pl.Series:
+    """
+    Calculates Spearman correlation for prediction and target within each era.
+    """
     _df: pl.DataFrame = pl.DataFrame({"era": era, "prediction": prediction, "target": target})
 
     calculate_numerai_corr = (pl.struct(pl.col('prediction'), pl.col('target'))
@@ -47,20 +60,25 @@ def grouped_spearman_correlation(prediction: pl.Series, target: pl.Series, era: 
             .to_series())
 
 
-def numerai_corr_struct(_df: pl.Series) -> np.float64:
+def numerai_corr_struct(struct: pl.Series) -> np.float64:
     """
-    :param _df: a Polars struct column
-    :return: the correlation coefficient between the predictions and the target as float
+    Applies the numerai_corr function to a Polars struct column.
+
+    Arguments:
+        struct: a Polars struct column containing the "prediction" and "target" fields
     """
-    prediction: pl.Series = _df.struct.field("prediction")
-    target: pl.Series = _df.struct.field("target")
+    prediction: pl.Series = struct.struct.field("prediction")
+    target: pl.Series = struct.struct.field("target")
 
     return numerai_corr(prediction, target)
 
 
-# correlation function that puts more weight on the tails
-# provided by numerai (see https://docs.numer.ai/numerai-tournament/scoring/correlation-corr)
+
 def numerai_corr(prediction: pl.Series, target: pl.Series) -> np.float64:
+    """
+    Correlation function that puts more weight on the tails provided by Numerai.
+    See https://docs.numer.ai/numerai-tournament/scoring/correlation-corr.
+    """
     ranked_prediction = (prediction.rank(method="average") - 0.5) / prediction.count()
     gauss_ranked_prediction = norm.ppf(ranked_prediction)  # gaussianise predictions
     centered_target = target - target.mean()  # make targets centered around 0
@@ -74,6 +92,9 @@ def numerai_corr(prediction: pl.Series, target: pl.Series) -> np.float64:
 
 
 def orthogonalise_by_era(prediction: pl.Series, prediction_mm: pl.Series, era: pl.Series) -> pl.Series:
+    """
+    Orthogonalises predictions with respect to the meta-model predictions by era.
+    """
     df: pl.DataFrame = pl.DataFrame({"era": era, "prediction": prediction, "prediction_mm": prediction_mm})
 
     orthogonalise_lazy = (pl.struct(pl.col('prediction'), pl.col('prediction_mm'))
@@ -85,19 +106,19 @@ def orthogonalise_by_era(prediction: pl.Series, prediction_mm: pl.Series, era: p
             .to_series())
 
 
-def orthogonalise(series: pl.Series) -> np.ndarray:
+def orthogonalise(struct: pl.Series) -> np.ndarray:
     """
     Orthogonalises predictions with respect to the meta-model predictions by projecting
     prediction onto mm_prediction, then subtracting that projection from prediction.
 
     Arguments:
-        series: a Polars struct column
+        struct: a Polars struct column containing the "prediction" and "prediction_mm" fields
 
     Returns:
         np.ndarray - the orthogonalised series as ndarray/list
     """
-    prediction: pl.Series = series.struct.field("prediction")
-    prediction_mm: pl.Series = series.struct.field("prediction_mm")
+    prediction: pl.Series = struct.struct.field("prediction")
+    prediction_mm: pl.Series = struct.struct.field("prediction_mm")
 
     ranked_prediction = (prediction.rank(method="average") - 0.5) / prediction.count()
     gauss_ranked_prediction = norm.ppf(ranked_prediction)  # gaussianise predictions

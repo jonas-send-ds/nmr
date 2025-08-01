@@ -8,6 +8,11 @@ ERAS_TO_PURGE = 26  # half a year
 
 
 def split_data() -> None:
+    """
+    Concatenates Numerai's train and validation sets and splits them into 3 folds,
+    purging 26 weeks in between the training and validation data. In addition, a dataset
+    containing the meta-model predictions is created.
+    """
     (DATA_PATH / 'folds').mkdir(parents=True, exist_ok=True)
 
     df_train: pl.DataFrame = pl.read_parquet(PATH_RAW_TRAIN_SET)
