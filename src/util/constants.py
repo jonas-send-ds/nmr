@@ -26,7 +26,7 @@ PATH_RAW_TRAIN_SET: str = str(DATA_PATH) + "/raw/train.parquet"
 PATH_RAW_VALIDATE_SET: str = str(DATA_PATH) + "/raw/validate.parquet"
 PATH_RAW_META_MODEL: str = str(DATA_PATH) + "/raw/meta_model.parquet"
 
-META_MODEL_PERFORMANCE = [.051, .048, .035]
+META_MODEL_PERFORMANCE = [.044, .037, .025]
 
 FIXED_LGB_PARAMETERS = {
     'objective': 'regression',
