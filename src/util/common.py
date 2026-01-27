@@ -52,7 +52,7 @@ def grouped_spearman_correlation(prediction: pl.Series, target: pl.Series, era: 
     _df: pl.DataFrame = pl.DataFrame({"era": era, "prediction": prediction, "target": target})
 
     calculate_numerai_corr = (pl.struct(pl.col('prediction'), pl.col('target'))
-                              .map_elements(numerai_corr_struct, return_dtype=pl.Float64))
+                              .map_batches(numerai_corr_struct, returns_scalar=True, return_dtype=pl.Float64))
 
     return (_df.group_by("era", maintain_order=True)
             .agg(calculate_numerai_corr.alias('correlation'))
@@ -98,7 +98,7 @@ def orthogonalise_by_era(prediction: pl.Series, prediction_mm: pl.Series, era: p
     df: pl.DataFrame = pl.DataFrame({"era": era, "prediction": prediction, "prediction_mm": prediction_mm})
 
     orthogonalise_lazy = (pl.struct(pl.col('prediction'), pl.col('prediction_mm'))
-                          .map_elements(orthogonalise, return_dtype=pl.List(pl.Float64)))
+                          .map_batches(orthogonalise, return_dtype=pl.List(pl.Float64)))
 
     return (df.group_by("era", maintain_order=True)
             .agg(orthogonalise_lazy.alias('prediction_orthogonalised')).explode('prediction_orthogonalised')
