@@ -35,3 +35,18 @@ FIXED_LGB_PARAMETERS = {
     "subsample_freq": 1,
     "verbose": -1
 }
+
+
+FIXED_XGB_PARAMETERS = {
+    'objective': 'reg:squarederror',
+    'nthread': 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
+    'verbosity': 0,
+    'tree_method': 'hist'  # use histogram-based algorithm for efficiency
+}
+
+FIXED_CB_PARAMETERS = {
+    'loss_function': 'RMSE',
+    'thread_count': 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
+    'verbose': False,
+    'allow_writing_files': False
+}
