@@ -1,6 +1,4 @@
 
-# needs to be run with an environment conforming to src/submission/numerai_requirements.txt
-
 import pandas as pd
 import numpy as np
 import lightgbm as lgb

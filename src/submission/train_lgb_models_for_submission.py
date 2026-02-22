@@ -14,9 +14,10 @@ required_columns = ['era', 'target'] + selected_features
 
 df = pl.read_parquet(f"{DATA_PATH}/df_all.parquet")
 
-ensemble_models = [0, 0, 1]
+ensemble_models = [0, 0, 1]  # TODO: automate
 ensemble_models_unique = list(set(ensemble_models))
 
+# FIXME: adjust to dict (see train_xgb_models_for_submission.py)
 parameters_list = load_from_pickle(DATA_PATH / 'results/parameters_list.pkl')
 
 (DATA_PATH / 'models/lgb').mkdir(parents=True, exist_ok=True)

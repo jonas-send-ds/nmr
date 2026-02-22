@@ -32,6 +32,9 @@ for trial in study_xgb.trials:
 
 cutoff = sorted(trial_values)[-NUMBER_OF_MODELS]
 
+# FIXME: sort trials by score (descending) and then fix train_ensemble (last cell)
+#   sorted(study.trials, key=lambda trial: trial.value if trial.value is not None else float('-inf'), reverse=True)
+
 parameters_list_lgb = [trial.params for trial in study_lgb.trials if trial.state == 1 and trial.value >= cutoff]
 parameters_list_xgb = [trial.params for trial in study_xgb.trials if trial.state == 1 and trial.value >= cutoff]
 

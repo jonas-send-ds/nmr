@@ -24,15 +24,15 @@ All experiments and analyses are included as notebooks found in `src/notebooks` 
 * `feature_selection.ipynb` runs the Boruta algorithm with simple LightGBM models to iteratively delete features. The resulting selected feature set is stored in `data/results/selected_features.pkl`.
 * `tune_hyperparameters_lgb.ipynb`, `tune_hyperparameters_xgb.ipynb`, `tune_hyperparameters_cb.ipynb` runs hyperparameter optimisation (for LightGBM, XGBoost, and CatBoost) via `optuna` and stores the results. This is first done to choose one or more frameworks and then for specific model selection. Due to slightly longer runtime and worse, performance, I will not consider CatBoost.
 
-The top 25 models from hyperparameter optimisation are then trained in `src/model_training/train_models_for_ensembling.py`.
+The top 20 models from hyperparameter optimisation are then trained in `src/model_training/train_models_for_ensembling.py`.
 
-* `test_feature_neutralisation.ipynb` tests whether (partially) subtracting the component of predictions which can be explained with a linear model (by era) improves performance (for LightGBM models). It indicates that this "feature neutralisation" can improve performance.
+* `test_feature_neutralisation.ipynb` tests whether (partially) subtracting the component of predictions which can be explained with a linear model (by era) improves performance. It indicates that this "feature neutralisation" can improve performance.
 * `train_ensemble.ipynb` selects models to include in the final ensemble and further analyses the best multiplier for "feature neutralisation". The parameters required to train the models for the ensemble are stored in `data/results/parameters_list.pkl`.
 
 ### Submision
 For all submission steps, a distinct Python environment that adheres to `src/submission/numerai_requirements.txt` must be used. See also `src/submission/README.md`.
 
-Models are trained in `src/submission/train_models_for_submission.py` and then pickled in a submission function (including feature neutralisation) in `src/submission/prepare_lgb_submission.py`.
+Models are trained in `src/submission/train_{lgb/xgb}_models_for_submission.py` and then pickled in a submission function (including feature neutralisation) in `src/submission/prepare_{lgb/xgb}_submission.py`.
 
 ### Linter
 The project can be linted with ruff via `ruff check`. The Rules are configured in `pyproject.toml`.

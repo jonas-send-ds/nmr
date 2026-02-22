@@ -1,25 +1,29 @@
 
-import pandas as pd
-import numpy as np
-import lightgbm as lgb
 import cloudpickle
+import numpy as np
+import pandas as pd
+import xgboost as xgb
 
 from collections import Counter
 
 from src.util.common import load_from_pickle
 from src.util.constants import DATA_PATH
 
+# TODO: this needs testing!
 
-MULTIPLIER = -.75
-
+MULTIPLIER = -.8
 
 selected_features = load_from_pickle(DATA_PATH / 'results/selected_features.pkl')
-ensemble_models = [0, 0, 1]
+# FIXME: add sorting in train_models_for_ensembling, then fix this logic
+ensemble_models = [12, 10, 16, 14, 10]  # TODO: automate
+ensemble_models = [i-9 for i in ensemble_models]
 model_dict = Counter(ensemble_models)
 
-models = []
+models = dict()
 for index in model_dict.keys():
-    models.append(lgb.Booster(model_file=f"{DATA_PATH}/models/lgb/lgb_model_{index}.txt"))
+    model = xgb.Booster()
+    model.load_model(f"{DATA_PATH}/models/xgb/xgb_model_{index}.json")
+    models[index] = model
 
 
 def normalise(prediction: np.array) -> np.array:
@@ -31,20 +35,17 @@ def get_linear_component(df: pd.DataFrame) -> np.array:
     y = df['prediction'].to_numpy()
     X = np.hstack([np.ones((X.shape[0], 1)), X])
 
-    try:
-        # this seems to be the fastest way to do this
-        beta_hat = np.linalg.solve(X.T @ X, X.T @ y)
-    except np.linalg.LinAlgError:
-        beta_hat = np.linalg.lstsq(X, y)[0]
+    beta_hat = np.linalg.lstsq(X, y)[0]
 
     return X @ beta_hat
 
 
 # Define prediction pipeline as a function
 def predict(live_features: pd.DataFrame) -> pd.DataFrame:
+    dmatrix_live = xgb.DMatrix(live_features[selected_features].to_numpy())
     predictions = []
     for index in model_dict.keys():
-        prediction = normalise(models[index].predict(live_features[selected_features]))
+        prediction = normalise(models[index].predict(dmatrix_live))
         for i in range(model_dict[index]):
             predictions.append(prediction)
 
@@ -57,5 +58,5 @@ def predict(live_features: pd.DataFrame) -> pd.DataFrame:
 
 (DATA_PATH / 'upload').mkdir(parents=True, exist_ok=True)
 predict_pickle = cloudpickle.dumps(predict)
-with open(DATA_PATH / "upload/upload_lgb.pkl", "wb") as f:
+with open(DATA_PATH / "upload/upload_xgb.pkl", "wb") as f:
     f.write(predict_pickle)
