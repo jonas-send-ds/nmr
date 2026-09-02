@@ -4,7 +4,7 @@ import os
 from numerapi import NumerAPI
 from src.util.constants import DATA_PATH, PATH_RAW_TRAIN_SET, PATH_RAW_VALIDATE_SET, PATH_RAW_META_MODEL
 
-VERSION = "v5.2"
+VERSION = "v5.3"
 
 
 def download_data() -> None:

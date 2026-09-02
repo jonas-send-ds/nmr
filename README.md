@@ -15,8 +15,8 @@ Simply run `src/data/data_pipeline.py`
 which also splits data in three training/validation folds and a dataset containing meta-model predictions.
 
 ### Analysis plan
-All experiments and analyses are included as notebooks found in `src/notebooks` which are run in the following order:
-* `ranking_vs_regression.ipynb` tests whether predicting ranks can outperform regression (both with LightGBM). Regression consistently outperforms ranking.
+All experiments and analyses are included as notebooks found in `notebooks` which are run in the following order:
+* `ranking_vs_regression.ipynb` tests whether predicting ranks can outperform regression (both with LightGBM). Regression consistently outperforms ranking, for both the 20-day and 60-day targets.
 * `performance_over_time.ipynb` analyses both how average performance varies over eras and how the performance ranking of LightGBM models is correlated between groups of eras.
 * `mmc_stability_and_approximation.ipynb` checks how stable correlation of LightGBM models with the meta model is and finds `CORR_PRED_TARGET - (CORR_PRED_MM * CORR_MM_TARGET)` as a good approximation for MMC which is subsequently used in training etc.
 * `benchmarks_and_mmc_approximation.ipynb` establishes correlation benchmarks for the three folds for linear models and LightGBM models trained with Numerai's suggested hyperparameters. The "Numerai models" are used to approximate MMC for the three folds.
