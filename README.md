@@ -16,10 +16,11 @@ which also splits data in three training/validation folds and a dataset containi
 
 ### Analysis plan
 All experiments and analyses are included as notebooks found in `notebooks` which are run in the following order:
+* As the dataset becomes ever larger, subsampling becomes relevant. `notebooks/test_subsampling_strategies.ipynb` tests how to best subsample the dataset for analysis while maintaining comparable performance. Sampling every second era yields a great memory-performance tradeoff.
 * `ranking_vs_regression.ipynb` tests whether predicting ranks can outperform regression (both with LightGBM). Regression consistently outperforms ranking, for both the 20-day and 60-day targets.
 * `performance_over_time.ipynb` analyses both how average performance varies over eras and how the performance ranking of LightGBM models is correlated between groups of eras.
-* `mmc_stability_and_approximation.ipynb` checks how stable correlation of LightGBM models with the meta model is and finds `CORR_PRED_TARGET - (CORR_PRED_MM * CORR_MM_TARGET)` as a good approximation for MMC which is subsequently used in training etc.
-* `benchmarks_and_mmc_approximation.ipynb` establishes correlation benchmarks for the three folds for linear models and LightGBM models trained with Numerai's suggested hyperparameters. The "Numerai models" are used to approximate MMC for the three folds.
+* `mmc_stability_and_approximation.ipynb` checks how stable correlation of LightGBM models with the meta model is and finds `CORR_PRED_TARGET - (CORR_PRED_MM * CORR_MM_TARGET)` as a good approximation for MMC which is subsequently used in training etc. This only works if we have enough eras of the current meta model.
+* `benchmarks_and_mmc_approximation.ipynb` establishes correlation benchmarks for the three folds for linear models and LightGBM models trained with Numerai's suggested hyperparameters. The "Numerai models" are used to approximate MMC for the three folds - this only works if we have enough eras of the current meta model.
 * `compare_frameworks.ipynb` briefly compares LightGBM, XGBoost, and CatBoost to choose one framework for feature selection.
 * `feature_selection.ipynb` runs the Boruta algorithm with simple LightGBM models to iteratively delete features. The resulting selected feature set is stored in `data/results/selected_features.pkl`.
 * `tune_hyperparameters_lgb.ipynb`, `tune_hyperparameters_xgb.ipynb`, `tune_hyperparameters_cb.ipynb` runs hyperparameter optimisation (for LightGBM, XGBoost, and CatBoost) via `optuna` and stores the results. This is first done to choose one or more frameworks and then for specific model selection. Due to slightly longer runtime and worse, performance, I will not consider CatBoost.

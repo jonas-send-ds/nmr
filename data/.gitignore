@@ -3,4 +3,4 @@ tmp/
 folds/
 models/
 upload/
-df_all.parquet
+raw/df_all.parquet

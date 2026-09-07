@@ -2,7 +2,7 @@
 from pathlib import Path
 
 
-def find_project_root(current_path: str | Path, marker: str = 'src')-> Path:
+def find_project_root(current_path: str | Path, marker: str = "src")-> Path:
     """
     Finds the root directory of a project by searching for a specific marker file or
     directory upward from a given path.
@@ -21,16 +21,18 @@ def find_project_root(current_path: str | Path, marker: str = 'src')-> Path:
     raise FileNotFoundError("Project root not found.")
 
 
-DATA_PATH: Path = find_project_root(Path.cwd()) / 'data'
+DATA_PATH: Path = find_project_root(Path.cwd()) / "data"
 PATH_RAW_TRAIN_SET: str = str(DATA_PATH) + "/raw/train.parquet"
 PATH_RAW_VALIDATE_SET: str = str(DATA_PATH) + "/raw/validate.parquet"
+PATH_RAW_ALL: str = str(DATA_PATH) + "/raw/df_all.parquet"
 PATH_RAW_META_MODEL: str = str(DATA_PATH) + "/raw/meta_model.parquet"
 
-META_MODEL_PERFORMANCE = [.044, .037, .025]
+META_MODEL_PERFORMANCE = []
+NUMERAI_BENCHMARK_MODEL_PERFORMANCE = [0.057220918143319935, 0.05251083141854189, 0.032989762930709744]
 
 FIXED_LGB_PARAMETERS = {
-    'objective': 'regression',
-    'metric': 'None',
+    "objective": "regression",
+    "metric": "None",
     "n_jobs": 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
     "subsample_freq": 1,
     "verbose": -1
@@ -38,15 +40,15 @@ FIXED_LGB_PARAMETERS = {
 
 
 FIXED_XGB_PARAMETERS = {
-    'objective': 'reg:squarederror',
-    'nthread': 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
-    'verbosity': 0,
-    'tree_method': 'hist'  # use histogram-based algorithm for efficiency
+    "objective": "reg:squarederror",
+    "nthread": 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
+    "verbosity": 0,
+    "tree_method": "hist"  # use histogram-based algorithm for efficiency
 }
 
 FIXED_CB_PARAMETERS = {
-    'loss_function': 'RMSE',
-    'thread_count': 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
-    'verbose': False,
-    'allow_writing_files': False
+    "loss_function": "RMSE",
+    "thread_count": 12,  # current number of cores on my Mac - set this to hardware cores, not virtual threads
+    "verbose": False,
+    "allow_writing_files": False
 }
